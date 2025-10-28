@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lettore di Frasi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .text-to-read {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: left;
+            white-space: pre-wrap; /* Mantiene la formattazione a capo */
+            font-size: 1.1em;
+            background-color: #e9ecef;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🗣️ Lettura delle frasi (Per Antonio Pio)</h1>
+        <div id="frasi" class="text-to-read">
+            Abbiamo diritto a un'istruzione.<br>
+            A un nome, a una nazione.<br>
+            Ad abitare sotto un tetto.<br>
+            A essere in salute e protetti.
+        </div>
+        <button id="leggiBtn" onclick="leggiTesto()">Leggi</button>
+        <p><small>Assicurati che il volume del dispositivo sia attivo.</small></p>
+    </div>
+
+    <script>
+        // Le frasi da leggere
+        const frasiDaLeggere = `Abbiamo diritto a un'istruzione.
+A un nome, a una nazione.
+Ad abitare sotto un tetto.
+A essere in salute e protetti.`;
+
+        // Funzione per la lettura del testo
+        function leggiTesto() {
+            // Controlla se l'API è supportata
+            if ('speechSynthesis' in window) {
+                const synth = window.speechSynthesis;
+                const testo = frasiDaLeggere;
+                
+                // Crea un oggetto Utterance
+                const utterance = new SpeechSynthesisUtterance(testo);
+                
+                // Imposta la lingua in italiano
+                // Questo aiuta il browser a selezionare una voce appropriata.
+                utterance.lang = 'it-IT'; 
+                
+                // Eventi per gestire l'interfaccia utente
+                const bottone = document.getElementById('leggiBtn');
+                
+                utterance.onstart = () => {
+                    bottone.textContent = 'Sto Leggendo... 🎧';
+                    bottone.disabled = true;
+                };
+
+                utterance.onend = () => {
+                    bottone.textContent = 'Leggi';
+                    bottone.disabled = false;
+                };
+
+                utterance.onerror = (event) => {
+                    console.error('SpeechSynthesisUtterance.onerror', event);
+                    bottone.textContent = 'Errore di Lettura';
+                    bottone.disabled = false;
+                    alert("Si è verificato un errore durante la lettura.");
+                };
+
+                // Avvia la sintesi vocale
+                synth.speak(utterance);
+                
+            } else {
+                // Messaggio di errore se l'API non è supportata
+                alert("Spiacente, la tua API di sintesi vocale non è supportata dal tuo browser.");
+                console.error("Speech Synthesis API non supportata.");
+            }
+        }
+    </script>
+
+</body>
+</html>
